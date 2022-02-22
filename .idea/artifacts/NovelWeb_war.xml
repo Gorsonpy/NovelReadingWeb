@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="NovelWeb:war">
+    <output-path>$PROJECT_DIR$/NovelWeb/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>NovelWeb</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="NovelWeb.war">
+      <element id="artifact" artifact-name="NovelWeb:war exploded" />
+    </root>
+  </artifact>
+</component>
