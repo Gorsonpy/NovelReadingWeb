@@ -7,7 +7,7 @@
         <packaging>war</packaging>
       </options>
     </properties>
-    <root id="archive" name="NovelWeb.war">
+    <root id="archive" name="NovelWeb-1.0-SNAPSHOT.war">
       <element id="artifact" artifact-name="NovelWeb:war exploded" />
     </root>
   </artifact>

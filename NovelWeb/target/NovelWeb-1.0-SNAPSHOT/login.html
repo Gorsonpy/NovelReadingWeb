@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>login</title>
+    <link href="css/login.css" rel="stylesheet">
+    <script type="text/javascript" src=js/login.js></script>
+</head>
+
+<body>
+
+
+<div id="loginDiv">
+    <form action="/NovelWeb_war_exploded/user/login" id="form" method = "post">
+        <h1 id="loginMsg">LOGIN IN</h1>
+        <p>Username:<input id="username" name="username" type="text" ></p>
+
+        <p>Password:<input id="password" name="password" type="password"></p>
+
+        
+
+        <div id="subDiv">
+            <button type="button" onclick="logIn()">login up</button>
+            <button type="button"> reset</button>]
+            <a href="register.html">没有账号？点击注册</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
