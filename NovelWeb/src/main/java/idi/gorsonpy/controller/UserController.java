@@ -19,9 +19,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<User> login(@RequestBody @RequestParam("username") String username, @RequestBody @RequestParam("password") String password, HttpServletRequest request) {
+    public Result<User> login(@RequestParam("username") String username, @RequestParam("password") String password) {
+        System.out.println(username + password);
         User user = userService.Login(username, password);
         if(user == null) {
             Result<User> result = Result.badRequest();

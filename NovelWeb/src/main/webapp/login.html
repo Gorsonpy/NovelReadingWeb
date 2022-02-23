@@ -28,26 +28,28 @@
 </div>
 <script>
 
-    var params = {};
+
 
     function logIn() {
         var username1 = document.getElementById("username");
         var username = username1.value
         var password = document.getElementById('password').value;
+        var params={
+            "username":username,
+            "password":password
+        }
 
-        params.username = username;
-        params.password = password;
         axios({
             method: "post",
             url: "/user/login",
             data: JSON.stringify(params),
+            contentType:"application/json;charset=UTF-8",
             datatype: 'json',
 
         }).then(function (resp) {
 
             }
         )
-        alert(axios.data);
     }
 </script>
 </body>
