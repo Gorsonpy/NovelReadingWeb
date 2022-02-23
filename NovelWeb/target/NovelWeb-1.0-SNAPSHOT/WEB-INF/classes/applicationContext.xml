@@ -48,4 +48,6 @@
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="idi.gorsonpy.mapper"/>
     </bean>
+
+
 </beans>
