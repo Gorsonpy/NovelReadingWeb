@@ -16,15 +16,44 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     <mvc:annotation-driven/>
     <!--内部资源视图解析器-->
     <bean id="resourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-       <!-- <property name="prefix" value="/WEB-INF/pages/"/>&lt;!&ndash;&ndash;&gt;-->
+        <!-- <property name="prefix" value="/WEB-INF/pages/"/>&lt;!&ndash;&ndash;&gt;-->
         <!--<property name="suffix" value=".html"/>-->
     </bean>
     <!--开发静态资源访问权限-->
     <mvc:default-servlet-handler/>
 
 
+    <!-- 谷歌验证码 -->
+    <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
+        <property name="config">
+            <bean class="com.google.code.kaptcha.util.Config">
+                <constructor-arg>
+                    <props>
+                        <prop key="kaptcha.border">yes</prop>
+                        <prop key="kaptcha.border.color">105,179,90</prop>
+                        <prop key="kaptcha.textproducer.font.color">blue</prop>
+                        <prop key="kaptcha.image.width">200</prop>
+                        <prop key="kaptcha.image.height">80</prop>
+                        <prop key="kaptcha.textproducer.font.size">70</prop>
+                        <prop key="kaptcha.session.key">code</prop>
+                        <prop key="kaptcha.textproducer.char.length">4</prop>
+                        <prop key="kaptcha.textproducer.font.names">宋体,楷体,微软雅黑</prop>
+                    </props>
+                </constructor-arg>
+            </bean>
+        </property>
+    </bean>
 
+    <!--配置文件上传解析器-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <!--上传文件总大小-->
+        <property name="maxUploadSize" value="5242800"/>
 
+        <!--单个上传文件大小-->
+        <property name="maxUploadSizePerFile" value="524800"/>
 
+        <!--上传文件的编码类型-->
 
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
 </beans>
