@@ -2,11 +2,13 @@ package idi.gorsonpy.utils;
 
 public class FileUtils {
 
-    final static String suffixList = "txt, pdf";
+    final static public String novelSuffixList = "txt";
+    final static public String pictureSuffixList = "bmp,jpg,jpeg,png,gif";
     //检查文件的类型是否合法
-    public static boolean checkFileName(String fileName){
+
+    public static boolean checkTxtFileName(String fileName, String suffixList){
         //截断点号直到末尾的部分就获得了文件的后缀名
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-        return suffix.contains(suffixList.trim().toLowerCase());
+        return !suffix.contains(suffixList.trim().toLowerCase());
     }
 }

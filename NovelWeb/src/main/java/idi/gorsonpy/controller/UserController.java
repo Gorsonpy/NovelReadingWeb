@@ -1,11 +1,11 @@
 package idi.gorsonpy.controller;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.code.kaptcha.Producer;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
-import idi.gorsonpy.utils.FileUtils;
 import idi.gorsonpy.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 
 @Controller
@@ -40,19 +38,27 @@ public class UserController {
     public Result<User> login(@RequestBody User u, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println(u.getUsername() + u.getPassword());
         User user = userService.Login(u.getUsername(), u.getPassword());
+        Result<User> result;
         if (user == null) {
-            Result<User> result = Result.badRequest();
+            result = Result.badRequest();
             result.setMessage("用户名或密码错误");
-            return result;
+            String result1 = JSON.toJSONString(result);
+            System.out.println(result1);
+           // request.getRequestDispatcher("/login.html").forward(request, response);
         } else {
-            Result<User> result = Result.success(user);
+            result = Result.success(user);
             result.setMessage("登录成功");
-            return Result.success(user);
+            String basepath = request.getContextPath() + "/success.html";
+           // response.sendRedirect(request.getContextPath() + "/success.html");
+            response.setHeader("REDIRECT", "REDIRECT");
+            response.setHeader("CONTENTPATH", basepath);
         }
+        return result;
     }
 
 
-    @RequestMapping(value = "/gerCheckCode")
+    //生成验证码并返回
+    @RequestMapping(value = "/gerCheckCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     public Result<String> getCheckCode(HttpServletRequest request) {
         String capText = producer.createText();
         HttpSession session = request.getSession();
@@ -79,61 +85,35 @@ public class UserController {
 
     //普通用户的注册
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+    @ResponseBody
     public Result<String> register(@RequestBody JSONObject registerInfo, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         //先检查验证码是否正确
-        HttpSession session = request.getSession();
-        String rightCheckCode = (String) session.getAttribute("checkCode");
-        String checkCode = registerInfo.getString("checkCode");
+        // HttpSession session = request.getSession();
+        // String rightCheckCode = (String) session.getAttribute("checkCode");
+        /* String checkCode = registerInfo.getString("checkCode");
         if (!rightCheckCode.equals(checkCode)) {
             Result<String> result = Result.badRequest();
             result.setMessage("答案错误");
             request.getRequestDispatcher("/register.html").forward(request, response);
             return result;
-        }
-
+        }*/
         //检查用户名是否已经被使用过
         String username = registerInfo.getString("username");
-        boolean b = userService.checkUserUsed(username);
+        boolean b = userService.UserNameIsUsed(username);
         Result<String> result;
         if (b) {
+            System.out.println("注册失败");
             result = Result.badRequest();
             result.setMessage("用户名已经使用");
-            request.getRequestDispatcher("/register.html").forward(request, response);
         } else {
+            System.out.println("注册成功");
             result = Result.success();
             result.setMessage("注册成功");
             String password = registerInfo.getString("password");
-            userService.register(username, password);
-            response.sendRedirect(request.getContextPath() + "/login.html");
+            //常规的注册方法，都是普通账号
+            userService.register(username, password, false);
         }
         return result;
     }
-
-    @RequestMapping(value = "/saveNovel")
-    @ResponseBody
-    public Result<String> saveNovel(MultipartFile file, HttpServletRequest request){
-        Result<String> result;
-        if(file.isEmpty()){
-            result = Result.badRequest();
-            result.setMessage("文件为空");
-            return result;
-        }
-        String filename = file.getOriginalFilename();
-        assert filename != null;
-        if(!FileUtils.checkFileName(filename)){
-            result = Result.badRequest();
-            result.setMessage("文件名不符合要求");
-            return result;
-        }
-        HttpSession session = request.getSession();
-        String path = "d:\\upload\\" + filename;
-        File f = new File(path, filename);
-        result = Result.success(path);
-        result.setMessage("小说上传成功");
-        return result;
-    }
-
-
-
 }

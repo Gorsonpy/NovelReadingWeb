@@ -15,13 +15,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean checkUserUsed(String username) {
+    public boolean UserNameIsUsed(String username) {
         User user = userMapper.selectUserByUsername(username);
-        return user == null;
+        return user != null;
     }
 
     @Override
-    public void register(String username, String password) {
-        userMapper.addUser(username, password);
+    public void register(String username, String password, boolean isAdmin) {
+        userMapper.addUser(username, password, isAdmin);
     }
 }

@@ -5,7 +5,7 @@ import idi.gorsonpy.domain.User;
 public interface UserService {
     User Login(String username, String password);
 
-    boolean checkUserUsed(String username);
+    boolean UserNameIsUsed(String username);
 
-    void register(String username, String password);
+    void register(String username, String password, boolean isAdmin);
 }
