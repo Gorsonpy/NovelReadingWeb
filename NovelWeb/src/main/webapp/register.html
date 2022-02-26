@@ -22,7 +22,7 @@
             <tr>
                 <td>用户名</td>
                 <td class="inputs">
-                    <input name="username" type="text" id="username">
+                    <input name="username" type="text" id="username" value="">
                     <br>
                     <span id="username_err" class="err_msg" style="display: none">用户名不太受欢迎</span>
                 </td>
@@ -32,7 +32,7 @@
             <tr>
                 <td>密码</td>
                 <td class="inputs">
-                    <input name="password" type="password" id="password">
+                    <input name="password" type="password" id="password" value="">
                     <br>
                     <span id="password_err" class="err_msg" style="display: none">密码格式有误</span>
                 </td>
@@ -49,37 +49,44 @@
 
 </div>
 <script>
-    function reg() {
-        var obj = {};
+    var isCommitted = false;//表单是否已经提交标识，默认为false
+    function reg(){
+        if(isCommitted==false){
+            isCommitted = true;//提交表单后，将表单是否已经提交标识设置为true
+            return true;//返回true让表单正常提交
+        } else {
+            layer.msg("您已经提交过了,信息正在查询请您耐心等待..")
+            return false;//返回false那么表单将不提交
+        }
+
+        var obj={};
         var resp;
         var username1 = document.getElementById("username");
         var username = username1.value
         var password = document.getElementById('password').value;
-        var params = {'username': username, 'password': password};
-
+        var params={'username':username,'password':password};
 
         axios({
+
             method: "post",
             url: "/user/register",
             data: params,
-            contentType: "application/json;charset=UTF-8",
             datatype: 'json',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json;charset=UTF-8'
             }
 
         }).then(res => {
-            obj = res;
-            var st = res.status;
+            obj = res.data;
+            var st=obj.status;
             alert(obj.message);
-            if (st == '200') {
-                alert("注册成功")
-                window.location.href = "login.html";
-            } else {
-                alert("注册失败");
-                window.location.href = "register.html";
+            if(st=='200') {alert("注册成功")
+
+            }
+            else {alert("注册失败");
             }
         });
+    }
     }
 </script>
 </body>

@@ -7,5 +7,5 @@ public class User {
     long id;
     private String username;
     private String password;
-    boolean isAdmin = true;
+    boolean admin;
 }

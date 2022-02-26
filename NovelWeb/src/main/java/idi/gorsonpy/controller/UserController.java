@@ -2,7 +2,6 @@ package idi.gorsonpy.controller;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.google.code.kaptcha.Producer;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
@@ -44,12 +43,12 @@ public class UserController {
             result.setMessage("用户名或密码错误");
             String result1 = JSON.toJSONString(result);
             System.out.println(result1);
-           // request.getRequestDispatcher("/login.html").forward(request, response);
+            // request.getRequestDispatcher("/login.html").forward(request, response);
         } else {
             result = Result.success(user);
             result.setMessage("登录成功");
             String basepath = request.getContextPath() + "/success.html";
-           // response.sendRedirect(request.getContextPath() + "/success.html");
+            // response.sendRedirect(request.getContextPath() + "/success.html");
             response.setHeader("REDIRECT", "REDIRECT");
             response.setHeader("CONTENTPATH", basepath);
         }
@@ -86,33 +85,32 @@ public class UserController {
     //普通用户的注册
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<String> register(@RequestBody JSONObject registerInfo, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-
-        //先检查验证码是否正确
-        // HttpSession session = request.getSession();
-        // String rightCheckCode = (String) session.getAttribute("checkCode");
-        /* String checkCode = registerInfo.getString("checkCode");
+    public Result<User> register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        /*先检查验证码是否正确
+     HttpSession session = request.getSession();
+     String rightCheckCode = (String) session.getAttribute("checkCode");
+        String checkCode = registerInfo.getString("checkCode");
         if (!rightCheckCode.equals(checkCode)) {
             Result<String> result = Result.badRequest();
             result.setMessage("答案错误");
             request.getRequestDispatcher("/register.html").forward(request, response);
             return result;
-        }*/
-        //检查用户名是否已经被使用过
-        String username = registerInfo.getString("username");
+        } */
+        // 检查用户名是否已经被使用过
+        String username = user.getUsername();
         boolean b = userService.UserNameIsUsed(username);
-        Result<String> result;
+        Result<User> result;
         if (b) {
             System.out.println("注册失败");
             result = Result.badRequest();
             result.setMessage("用户名已经使用");
         } else {
+            //常规的注册方法，都是普通账号
+            String password = user.getPassword();
+            userService.register(username, password, false);
             System.out.println("注册成功");
             result = Result.success();
             result.setMessage("注册成功");
-            String password = registerInfo.getString("password");
-            //常规的注册方法，都是普通账号
-            userService.register(username, password, false);
         }
         return result;
     }

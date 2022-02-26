@@ -9,6 +9,6 @@ public class FileUtils {
     public static boolean checkTxtFileName(String fileName, String suffixList){
         //截断点号直到末尾的部分就获得了文件的后缀名
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
-        return !suffix.contains(suffixList.trim().toLowerCase());
+        return suffixList.trim().contains(suffix.toLowerCase());
     }
 }

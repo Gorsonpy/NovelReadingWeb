@@ -13,11 +13,47 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     <!--组件扫描  主要扫描controller-->
     <context:component-scan base-package="idi.gorsonpy.controller"/>
     <!--配置mvc注解驱动-->
+
+    <!-- annotation-driven 控制器映射器和控制器适配器 ，用来控制@Controller处理http请求的方式-->
     <mvc:annotation-driven/>
+        <!--<mvc:message-converters>&lt;!&ndash; register-defaults="true"表示使用默认的消息转换器 &ndash;&gt;
+            &lt;!&ndash; FastJson(Spring4.2x以上版本设置) &ndash;&gt;
+            &lt;!&ndash; 使用@responsebody注解并且返回值类型为String时，返回的string字符串带有双引号"{'user':'songfs'}"，其原因是直接将string类型转成了json字符串，应该在json解析器之前添加字符串解析器&ndash;&gt;
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+            &lt;!&ndash; FastJsonHttpMessageConverter4 使@ResponseBody支持返回Map<String,Object>等类型,它会自动转换为json&ndash;&gt;
+            &lt;!&ndash; 需要返回json时需要配置 produces = "application/json"。不需要再指定utf-8了 &ndash;&gt;
+            <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+                &lt;!&ndash; 加入支持的媒体类型 &ndash;&gt;
+                <property name="supportedMediaTypes">
+                    <list>
+                        &lt;!&ndash; 这里顺序不能反，一定先写text/html，不然IE执行AJAX时,返回JSON会出现下载文件 &ndash;&gt;
+                        <value>text/html;charset=UTF-8</value>
+                        <value>application/json;charset=UTF-8</value>
+                        <value>application/xml;charset=UTF-8</value>
+                    </list>
+                </property>
+                <property name="fastJsonConfig">
+                    <bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+                        <property name="features">
+                            <list>
+                                <value>AllowArbitraryCommas</value>
+                                <value>AllowUnQuotedFieldNames</value>
+                                <value>DisableCircularReferenceDetect</value>
+                            </list>
+                        </property>
+                        <property name="dateFormat" value="yyyy-MM-dd HH:mm:ss"/>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>-->
+
+
+
+
     <!--内部资源视图解析器-->
     <bean id="resourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <!-- <property name="prefix" value="/WEB-INF/pages/"/>&lt;!&ndash;&ndash;&gt;-->
-        <!--<property name="suffix" value=".html"/>-->
+        <property name="suffix" value=".html"/>
     </bean>
     <!--开发静态资源访问权限-->
     <mvc:default-servlet-handler/>
@@ -47,7 +83,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     <!--配置文件上传解析器-->
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <!--上传文件总大小-->
-        <property name="maxUploadSize" value="10485760"/>
+        <property name="maxUploadSize" value="1048576000"/>
 
         <!--单个上传文件大小100M-->
         <property name="maxUploadSizePerFile" value="52480000"/>

@@ -3,11 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-
-    <!--定义别名-->
     <typeAliases>
         <!--<typeAlias type="com.itheima.domain.Account" alias="account"></typeAlias>-->
         <package name="idi.gorsonpy.domain"/>
     </typeAliases>
-
+    <!--PageHelper 5.x版本的配置方式和旧版本有所不同，配的是PageInterceptor-->
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            <property name="reasonable" value="true"/>
+        </plugin>
+    </plugins>
 </configuration>
