@@ -1,4 +1,5 @@
 import idi.gorsonpy.utils.FileUtils;
+import org.junit.Test;
 
 //后缀名检查测试
 public class FileNameTest {
@@ -9,5 +10,13 @@ public class FileNameTest {
         }else{
             System.out.println("错误");
         }
+    }
+
+    //测试生成唯一ID
+    @Test
+    public void testGenerateId()
+    {
+        System.out.println(FileUtils.generateUid("xiaobai.txt"));
+        System.out.println(FileUtils.generateUid("ll.jpg"));
     }
 }

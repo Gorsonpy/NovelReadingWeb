@@ -1,5 +1,7 @@
 package idi.gorsonpy.utils;
 
+import java.util.UUID;
+
 public class FileUtils {
 
     final static public String novelSuffixList = "txt";
@@ -10,5 +12,9 @@ public class FileUtils {
         //截断点号直到末尾的部分就获得了文件的后缀名
         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length());
         return suffixList.trim().contains(suffix.toLowerCase());
+    }
+
+    public static String generateUid(String fileName){
+        return UUID.randomUUID().toString().replace("-", "") + fileName.substring(fileName.lastIndexOf("."), fileName.length());
     }
 }

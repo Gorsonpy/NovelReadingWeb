@@ -8,4 +8,6 @@ public interface UserService {
     boolean UserNameIsUsed(String username);
 
     void register(String username, String password, boolean isAdmin);
+
+    void collect(Long userId, Long novelId);
 }

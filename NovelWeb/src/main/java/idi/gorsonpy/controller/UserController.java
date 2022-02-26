@@ -2,6 +2,7 @@ package idi.gorsonpy.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.code.kaptcha.Producer;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
@@ -114,4 +115,18 @@ public class UserController {
         }
         return result;
     }
+
+    // 用户添加小说到收藏夹
+    @RequestMapping("/collectNovel")
+    @ResponseBody
+    public Result<String> collectNovel(@RequestBody JSONObject jsonInfo){
+        Long userId = jsonInfo.getLong("userId");
+        Long novelId = jsonInfo.getLong("novelId");
+
+        userService.collect(userId, novelId);
+
+        return Result.success();
+    }
+
+
 }

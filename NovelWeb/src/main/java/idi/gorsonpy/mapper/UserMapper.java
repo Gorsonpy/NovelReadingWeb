@@ -19,4 +19,7 @@ public interface UserMapper {
 
     @Select("select * from user")
     List<User> selectAll();
+
+    @Insert("insert into favorites values (#{userId}, #{novelId})")
+    void addUserNovelRel(@Param("userId") Long userId, @Param("novelId") Long novelId);
 }

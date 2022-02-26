@@ -24,4 +24,9 @@ public class UserServiceImpl implements UserService {
     public void register(String username, String password, boolean isAdmin) {
         userMapper.addUser(username, password, isAdmin);
     }
+
+    @Override
+    public void collect(Long userId, Long novelId) {
+        userMapper.addUserNovelRel(userId, novelId);
+    }
 }

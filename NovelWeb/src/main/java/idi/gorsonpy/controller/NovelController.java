@@ -2,9 +2,11 @@ package idi.gorsonpy.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import idi.gorsonpy.domain.Novel;
 import idi.gorsonpy.service.NovelService;
 import idi.gorsonpy.utils.FileUtils;
+import idi.gorsonpy.utils.Page;
 import idi.gorsonpy.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.util.List;
 
 @Controller
@@ -56,6 +58,11 @@ public class NovelController {
             return result;
         }
 
+
+        //检查后把名字换成唯一标识性ID
+        pictureFileName = FileUtils.generateUid(pictureFileName);
+        txtFileName = FileUtils.generateUid(txtFileName);
+
         //文件存放路径位置
         String path1 = request.getSession().getServletContext().getRealPath("/waitingChecked/txt");
         String path2 = request.getSession().getServletContext().getRealPath("/waitingChecked/picture");
@@ -85,15 +92,45 @@ public class NovelController {
     }
 
 
-
-    //分页展示小说
+    //分页展示小说除图片之外的信息
     @RequestMapping(value = "/showNovels")
     @ResponseBody
-    public Result<List<Novel>> showNovels(@RequestBody JSONObject pageInfo){
+    public Page<List<Novel>> showNovels(@RequestBody JSONObject pageInfo) {
         Integer page = pageInfo.getInteger("page");
         Integer pageSize = pageInfo.getInteger("pageSize");
         List<Novel> novels = novelService.showByPage(page, pageSize);
-        Result<List<Novel>> result = Result.success(novels);
-        return result;
+        PageInfo<Novel> novelPageInfo = new PageInfo<Novel>(novels);
+        Page<List<Novel>> novelPage = Page.success(novels);
+        novelPage.setPageInfo(novelPageInfo);
+        return novelPage;
     }
+
+    //下载封面
+    @RequestMapping(value = "/download/File")
+    @ResponseBody
+    public Result<String> showPicture(@RequestBody JSONObject filePathInfo, HttpServletResponse response) throws IOException {
+        String filePath = filePathInfo.getString("filePath");
+
+        response.reset(); //设置不缓存
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("multipart/form-data"); //设置以二进制方式交换数据
+
+        File file = new File(filePath, filePath);
+        InputStream inputStream = new FileInputStream(file);
+        OutputStream outputStream = response.getOutputStream();
+        byte[] buffer = new byte[1024]; //每次传输1024字节
+
+        int len = 0;
+        while ((len = inputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, len);
+            outputStream.flush();
+        }
+        outputStream.close();
+        inputStream.close();
+        return Result.success();
+    }
+
+
+
+
 }
