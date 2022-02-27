@@ -1,10 +1,14 @@
 package idi.gorsonpy.service.impl;
 
+import idi.gorsonpy.domain.Favorites;
+import idi.gorsonpy.domain.Novel;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.mapper.UserMapper;
 import idi.gorsonpy.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
@@ -28,5 +32,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public void collect(Long userId, Long novelId) {
         userMapper.addUserNovelRel(userId, novelId);
+    }
+
+
+    @Override
+    public boolean IsCollect(Long userId, Long novelId) {
+        Favorites favorites = userMapper.selectFavoritesRel(userId, novelId);
+        return favorites != null;
+    }
+
+    @Override
+    public void delCollect(Long userId, Long novelId) {
+        userMapper.delUserNovelRel(userId, novelId);
+    }
+
+    public List<Novel> selectUserCollect(Long userId) {
+        userMapper.selectUserCollect(userId);
     }
 }

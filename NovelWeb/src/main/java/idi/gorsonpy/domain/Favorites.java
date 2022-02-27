@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class Favorites {
-    String userId;
-    String novelID;
+    Long userId;
+    Long novelId;
 }

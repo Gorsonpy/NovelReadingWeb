@@ -4,6 +4,8 @@ package idi.gorsonpy.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.code.kaptcha.Producer;
+import idi.gorsonpy.domain.Favorites;
+import idi.gorsonpy.domain.Novel;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
 import idi.gorsonpy.utils.Result;
@@ -23,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -116,17 +119,56 @@ public class UserController {
         return result;
     }
 
-    // 用户添加小说到收藏夹
-    @RequestMapping("/collectNovel")
+    //用户显示某小说是否收藏状态
+    @RequestMapping(value = "/showCollectStatus", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<String> collectNovel(@RequestBody JSONObject jsonInfo){
-        Long userId = jsonInfo.getLong("userId");
-        Long novelId = jsonInfo.getLong("novelId");
+    public Result<String> showCollectStatus(@RequestBody Favorites favorites) {
+        Long userId = favorites.getUserId();
+        Long novelId = favorites.getNovelId();
+        boolean b = userService.IsCollect(userId, novelId);
+        Result<String> result;
+        if (b) {
+            result = Result.success();
+            result.setMessage("已收藏");
+        } else {
+            result = Result.badRequest();
+            result.setMessage("未收藏");
+        }
+        return result;
+    }
+
+    // 用户添加小说到收藏夹
+    @RequestMapping(value = "/collectNovel", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Result<String> collectNovel(@RequestBody Favorites favorites) {
+        Long userId = favorites.getUserId();
+        Long novelId = favorites.getNovelId();
 
         userService.collect(userId, novelId);
-
         return Result.success();
     }
 
+    //用户取消收藏
+    @RequestMapping(value = "/delCollect", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Result<String> delCollect(@RequestBody JSONObject delInfo) {
+        Long userId = delInfo.getLong("userId");
+        Long novelId = delInfo.getLong("novelId");
+        userService.delCollect(userId, novelId);
+        return Result.success();
+    }
+
+    //用户收藏夹里小说展示
+    @RequestMapping(value = "/showCollectNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Result<List<Novel>> showCollectNovels(@RequestBody JSONObject userInfo) {
+        Long userId = userInfo.getLong("userId");
+        List<Novel> novels = userService.selectUserCollect(userId);
+
+        if (novels != null)
+            return Result.success(novels);
+        else
+            return Result.badRequest();
+    }
 
 }

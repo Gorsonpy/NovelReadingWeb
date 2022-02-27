@@ -105,7 +105,7 @@ public class NovelController {
         return novelPage;
     }
 
-    //下载封面
+    //下载文件
     @RequestMapping(value = "/download/File")
     @ResponseBody
     public Result<String> showPicture(@RequestBody JSONObject filePathInfo, HttpServletResponse response) throws IOException {
@@ -130,7 +130,6 @@ public class NovelController {
         return Result.success();
     }
 
-
-
+    //
 
 }
