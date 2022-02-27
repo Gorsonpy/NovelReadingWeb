@@ -3,8 +3,10 @@ package idi.gorsonpy.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import idi.gorsonpy.domain.Novel;
+import idi.gorsonpy.domain.Type;
 import idi.gorsonpy.mapper.NovelMapper;
 import idi.gorsonpy.service.NovelService;
+import idi.gorsonpy.utils.SearchInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +18,30 @@ public class NovelServiceImpl implements NovelService {
     NovelMapper novelMapper;
 
     @Override
-    public void saveNovel(String name, String author, String description, String picturePath, String txtPath) {
-        novelMapper.addNovel(name, author, description, picturePath, txtPath);
+    public void saveNovel(String name, String author, String description, String picturePath, String txtPath, String type) {
+        novelMapper.addNovel(name, author, description, picturePath, txtPath, type);
     }
 
     @Override
     public List<Novel> showByPage(int page, int pageSize) {
         PageHelper.startPage(page, pageSize);
-        List<Novel> novels = novelMapper.selectAll();
-        return novels;
+        return novelMapper.selectAll();
     }
+
+    @Override
+    public void addNovelType(String typeName) {
+        novelMapper.addNovelType(typeName);
+    }
+
+    @Override
+    public List<Type> showTypes() {
+        return novelMapper.selectAllTypes();
+    }
+
+    @Override
+    public List<Novel> selectNovel(SearchInfo searchInfo) {
+        return novelMapper.selectNovel(searchInfo);
+    }
+
+
 }

@@ -3,4 +3,27 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="idi.gorsonpy.mapper.NovelMapper">
+
+    <!--动态sql+模糊查询必须使用bind标签的形式，contact函数的做法会报错-->
+    <select id="selectNovel" resultType="idi.gorsonpy.domain.Novel">
+        select *
+        from novel
+        <where>
+            <if test="name != null and name != '' ">
+                <bind name="simName" value="'%' + name + '%'"/>
+                and name like #{simName}
+            </if>
+            <if test="author != null and author != '' ">
+                <bind name="simAuthor" value="'%' + author + '%'"/>
+                and author like #{simAuthor}
+            </if>
+            <if test="description != null and description != '' ">
+                <bind name="simDescription" value="'%' + author +'%'"/>
+                and description like #{simDescription}
+            </if>
+            <if test="type != null and type != '' ">
+                and type = #{type}
+            </if>
+        </where>
+    </select>
 </mapper>

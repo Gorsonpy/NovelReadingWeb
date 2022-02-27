@@ -47,6 +47,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<Novel> selectUserCollect(Long userId) {
-        userMapper.selectUserCollect(userId);
+        return userMapper.selectUserCollect(userId);
     }
 }

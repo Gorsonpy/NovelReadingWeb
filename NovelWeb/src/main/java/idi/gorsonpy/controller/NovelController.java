@@ -4,16 +4,15 @@ package idi.gorsonpy.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import idi.gorsonpy.domain.Novel;
+import idi.gorsonpy.domain.Type;
 import idi.gorsonpy.service.NovelService;
 import idi.gorsonpy.utils.FileUtils;
 import idi.gorsonpy.utils.Page;
 import idi.gorsonpy.utils.Result;
+import idi.gorsonpy.utils.SearchInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,10 +26,25 @@ public class NovelController {
     @Autowired
     NovelService novelService;
 
+    //添加小说类型
+    @RequestMapping(value = "addNovelType", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    public Result<String> addNovelType(@RequestBody JSONObject typeInfo){
+        String typeName = typeInfo.getString("typeName");
+        novelService.addNovelType(typeName);
+        return Result.success();
+    }
+
+    //显示已有的小说类型
+    @RequestMapping(value = "showTypes")
+    public Result<List<Type>> showTypes(){
+        List<Type> types = novelService.showTypes();
+        return Result.success(types);
+    }
     //上传小说
     @RequestMapping(value = "/uploadNovel")
     @ResponseBody
-    public Result<String> uploadNovel(@RequestParam String name, @RequestParam String author, @RequestParam String description, @RequestParam MultipartFile pictureFile, @RequestParam MultipartFile txtFile, HttpServletRequest request) {
+    public Result<String> uploadNovel(@RequestParam String name, @RequestParam String author, @RequestParam String description, @RequestParam MultipartFile pictureFile, @RequestParam MultipartFile txtFile, @RequestParam String type,  HttpServletRequest request) {
         System.out.println(author);
         System.out.println(name);
         System.out.println(description);
@@ -85,7 +99,7 @@ public class NovelController {
         }
 
         //调用业务层存储novel
-        novelService.saveNovel(name, author, description, path2, path1);
+        novelService.saveNovel(name, author, description, path2 + "\\" + pictureFileName , path1 + "\\" + txtFileName, type);
         result = Result.success();
         result.setMessage("小说上传成功");
         return result;
@@ -130,6 +144,14 @@ public class NovelController {
         return Result.success();
     }
 
-    //
+    //搜索小说(模糊搜索 + 动态sql)
+    @RequestMapping(value = "/searchNovels")
+    @ResponseBody
+    public Result<List<Novel>> searchNovels(@RequestBody SearchInfo searchInfo) {
+        List<Novel> novelList = novelService.selectNovel(searchInfo);
+        return Result.success(novelList);
+    }
+
+
 
 }

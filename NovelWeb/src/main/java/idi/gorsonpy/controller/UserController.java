@@ -15,15 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -61,56 +60,64 @@ public class UserController {
 
 
     //生成验证码并返回
-    @RequestMapping(value = "/gerCheckCode", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
-    public Result<String> getCheckCode(HttpServletRequest request) {
+    @RequestMapping(value = "/getCheckCode", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public Result<String> getCheckCode(HttpServletRequest request, HttpServletResponse response) {
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+
         String capText = producer.createText();
         HttpSession session = request.getSession();
         session.setAttribute("checkCode", capText);
-        Result<String> result = null;
+        Result<String> result;
         try {
             //生成图形验证码
             BufferedImage bufferedImage = producer.createImage(capText);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "jsp", byteArrayOutputStream);
-            BASE64Encoder encoder = new BASE64Encoder();
-            String img = encoder.encode(byteArrayOutputStream.toByteArray());
-            //result的data域存放图片路径
-            result = Result.success(img);
-            result.setMessage("验证码生成成功");
+            ServletOutputStream servletOutputStream = response.getOutputStream();
+            ImageIO.write(bufferedImage, "jpg", servletOutputStream);
+            servletOutputStream.flush();
+            servletOutputStream.close();
+            result = Result.success();
+            return result;
         } catch (IOException e) {
-            result = Result.badRequest();
-            result.setMessage("验证码生成失败");
             e.printStackTrace();
+            result = Result.badRequest();
+            return result;
         }
-        return result;
     }
 
 
     //普通用户的注册
     @RequestMapping(value = "/register", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<User> register(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        /*先检查验证码是否正确
-     HttpSession session = request.getSession();
-     String rightCheckCode = (String) session.getAttribute("checkCode");
+    public Result<String> register(@RequestBody JSONObject registerInfo, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // 先检查验证码是否正确
+        HttpSession session = request.getSession();
+        String rightCheckCode = (String) session.getAttribute("checkCode");
         String checkCode = registerInfo.getString("checkCode");
-        if (!rightCheckCode.equals(checkCode)) {
+
+
+        //验证码的比较忽略大小写
+        if (!rightCheckCode.equalsIgnoreCase(checkCode)) {
             Result<String> result = Result.badRequest();
-            result.setMessage("答案错误");
+            result.setMessage("验证码错误");
             request.getRequestDispatcher("/register.html").forward(request, response);
             return result;
-        } */
+        }
         // 检查用户名是否已经被使用过
-        String username = user.getUsername();
+        String username = registerInfo.getString("username");
         boolean b = userService.UserNameIsUsed(username);
-        Result<User> result;
+        Result<String> result;
         if (b) {
             System.out.println("注册失败");
             result = Result.badRequest();
             result.setMessage("用户名已经使用");
         } else {
             //常规的注册方法，都是普通账号
-            String password = user.getPassword();
+            String password = registerInfo.getString("password");
             userService.register(username, password, false);
             System.out.println("注册成功");
             result = Result.success();
@@ -170,5 +177,4 @@ public class UserController {
         else
             return Result.badRequest();
     }
-
 }

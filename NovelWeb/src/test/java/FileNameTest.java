@@ -19,4 +19,9 @@ public class FileNameTest {
         System.out.println(FileUtils.generateUid("xiaobai.txt"));
         System.out.println(FileUtils.generateUid("ll.jpg"));
     }
+
+    @Test
+    public void test(){
+        System.out.println("\\\\");
+    }
 }
