@@ -19,4 +19,6 @@ public interface NovelService {
     List<Novel> selectNovel(SearchInfo searchInfo);
 
     List<Novel> showPopular();
+
+    void addTimes(String filePath);
 }

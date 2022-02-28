@@ -43,4 +43,8 @@ public interface NovelMapper {
 
     @Select("select * from novel order by times limit  5")
     List<Novel> selectPopular();
+
+
+    @Update("update novel set times = times + 1 where disk = #{filePath};")
+    void addTimes(@Param("filePath") String filePath);
 }

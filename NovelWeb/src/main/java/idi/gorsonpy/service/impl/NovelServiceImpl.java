@@ -49,4 +49,9 @@ public class NovelServiceImpl implements NovelService {
         return novelMapper.selectPopular();
     }
 
+    @Override
+    public void addTimes(String filePath) {
+        novelMapper.addTimes(filePath);
+    }
+
 }

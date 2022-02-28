@@ -125,6 +125,9 @@ public class NovelController {
     public Result<String> showPicture(@RequestBody JSONObject filePathInfo, HttpServletResponse response) throws IOException {
         String filePath = filePathInfo.getString("filePath");
 
+        //前端传入一个choose变量来表明是下载小说还是读取封面, 1表示是读取小说， 0表示读取封面
+        Integer choose = filePathInfo.getInteger("choose");
+
         response.reset(); //设置不缓存
         response.setCharacterEncoding("utf-8");
         response.setContentType("multipart/form-data"); //设置以二进制方式交换数据
@@ -138,6 +141,10 @@ public class NovelController {
         while ((len = inputStream.read(buffer)) != -1) {
             outputStream.write(buffer, 0, len);
             outputStream.flush();
+        }
+
+        if(choose == 1){
+            novelService.addTimes(filePath);
         }
         outputStream.close();
         inputStream.close();
@@ -158,7 +165,7 @@ public class NovelController {
     // 排行榜功能(显示最高下载量的五部小说)
     @RequestMapping(value = "/showPopular", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public Result<List<Novel>> showPopular(){
+    public Result<List<Novel>> showPopular() {
         List<Novel> novels = novelService.showPopular();
         return Result.success(novels);
     }
