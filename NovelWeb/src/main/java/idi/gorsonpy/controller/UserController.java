@@ -3,11 +3,13 @@ package idi.gorsonpy.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Producer;
 import idi.gorsonpy.domain.Favorites;
 import idi.gorsonpy.domain.Novel;
 import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
+import idi.gorsonpy.utils.Page;
 import idi.gorsonpy.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -176,5 +178,28 @@ public class UserController {
             return Result.success(novels);
         else
             return Result.badRequest();
+    }
+
+    // 展示待审核的小说
+    @RequestMapping(value = "/showNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public Page<List<Novel>> showUnchecked(@RequestBody JSONObject pageInfo){
+        Integer page = pageInfo.getInteger("page");
+        Integer pageSize = pageInfo.getInteger("pageSize");
+        List<Novel> novels = userService.showNovels(page, pageSize);
+        Page<List<Novel>> p = Page.success(novels);
+        PageInfo<Novel> pInfo = new PageInfo<Novel>(novels);
+        p.setPageInfo(pInfo);
+        return p;
+    }
+
+
+    // 审核小说
+    @RequestMapping(value = "/checkNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    private void checkNovels(@RequestBody JSONObject checkInfo) {
+        String checkStatus = checkInfo.getString("checkStatus");
+        Long novelId = checkInfo.getLong("novelId");
+        userService.checkNovels(novelId, checkStatus);
     }
 }

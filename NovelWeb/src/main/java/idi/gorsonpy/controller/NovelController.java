@@ -78,8 +78,8 @@ public class NovelController {
         txtFileName = FileUtils.generateUid(txtFileName);
 
         //文件存放路径位置
-        String path1 = request.getSession().getServletContext().getRealPath("/waitingChecked/txt");
-        String path2 = request.getSession().getServletContext().getRealPath("/waitingChecked/picture");
+        String path1 = request.getSession().getServletContext().getRealPath("/download/txt");
+        String path2 = request.getSession().getServletContext().getRealPath("/download/picture");
 
         File txtPath = new File(path1, txtFileName);
         File picturePath = new File(path2, pictureFileName);
@@ -99,7 +99,7 @@ public class NovelController {
         }
 
         //调用业务层存储novel
-        novelService.saveNovel(name, author, description, path2 + "\\" + pictureFileName , path1 + "\\" + txtFileName, type);
+        novelService.saveNovel(name, author, description, path2 + "\\\\" + pictureFileName , path1 + "\\\\" + txtFileName, type);
         result = Result.success();
         result.setMessage("小说上传成功");
         return result;
@@ -144,14 +144,16 @@ public class NovelController {
         return Result.success();
     }
 
-    //搜索小说(模糊搜索 + 动态sql)
-    @RequestMapping(value = "/searchNovels")
+    //搜索小说(分页展示 + 模糊搜索 + 动态sql)
+    @RequestMapping(value = "/searchNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public Result<List<Novel>> searchNovels(@RequestBody SearchInfo searchInfo) {
+    public Page<List<Novel>> searchNovels(@RequestBody SearchInfo searchInfo) {
         List<Novel> novelList = novelService.selectNovel(searchInfo);
-        return Result.success(novelList);
+        PageInfo<Novel> pageInfo = new PageInfo<Novel>(novelList);
+        Page<List<Novel>> page = Page.success(novelList);
+        page.setPageInfo(pageInfo);
+        return page;
     }
-
 
 
 }

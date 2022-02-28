@@ -40,8 +40,8 @@ public class NovelServiceImpl implements NovelService {
 
     @Override
     public List<Novel> selectNovel(SearchInfo searchInfo) {
+        PageHelper.startPage(searchInfo.getPage(), searchInfo.getPageSize());
         return novelMapper.selectNovel(searchInfo);
     }
-
 
 }

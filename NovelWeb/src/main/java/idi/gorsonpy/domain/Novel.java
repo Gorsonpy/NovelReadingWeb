@@ -20,4 +20,7 @@ public class Novel {
 
     //存放的该小说被下载的次数(推荐功能使用)
     Long times;
+
+    //是否被审核通过了
+    boolean isChecked;
 }

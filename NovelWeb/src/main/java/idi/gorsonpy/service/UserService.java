@@ -19,4 +19,8 @@ public interface UserService {
     void delCollect(Long userId, Long novelId);
 
     List<Novel> selectUserCollect(Long userId);
+
+    List<Novel> showNovels(Integer page, Integer pageSize);
+
+    void checkNovels(Long novelId, String checkStatus);
 }
