@@ -39,4 +39,8 @@ public interface NovelMapper {
 
     @Delete("delete from novel where id = #{novelId}")
     void delNovel(@Param("novelId") Long novelId);
+
+
+    @Select("select * from novel order by times limit  5")
+    List<Novel> selectPopular();
 }

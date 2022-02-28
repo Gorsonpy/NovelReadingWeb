@@ -17,4 +17,6 @@ public interface NovelService {
     List<Type> showTypes();
 
     List<Novel> selectNovel(SearchInfo searchInfo);
+
+    List<Novel> showPopular();
 }

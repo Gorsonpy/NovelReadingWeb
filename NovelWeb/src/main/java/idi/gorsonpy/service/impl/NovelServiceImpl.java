@@ -44,4 +44,9 @@ public class NovelServiceImpl implements NovelService {
         return novelMapper.selectNovel(searchInfo);
     }
 
+    @Override
+    public List<Novel> showPopular() {
+        return novelMapper.selectPopular();
+    }
+
 }

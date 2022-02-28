@@ -155,5 +155,11 @@ public class NovelController {
         return page;
     }
 
-
+    // 排行榜功能(显示最高下载量的五部小说)
+    @RequestMapping(value = "/showPopular", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public Result<List<Novel>> showPopular(){
+        List<Novel> novels = novelService.showPopular();
+        return Result.success(novels);
+    }
 }
