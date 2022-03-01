@@ -5290,3 +5290,6 @@ java.lang.IllegalArgumentException: Odd number of characters.
 [INFO ][2022-03-01 15:41:45,597][org.springframework.web.servlet.handler.SimpleUrlHandlerMapping] :Mapped URL path [/**] onto handler 'org.springframework.web.servlet.resource.DefaultServletHttpRequestHandler#0'
 [INFO ][2022-03-01 15:41:45,712][org.springframework.web.servlet.DispatcherServlet] :FrameworkServlet 'DispatcherServlet': initialization completed in 1443 ms
 [INFO ][2022-03-01 15:41:46,146][org.apache.shiro.session.mgt.AbstractValidatingSessionManager] :Enabling session validation scheduler...
+[INFO ][2022-03-01 15:59:28,116][org.springframework.web.context.support.XmlWebApplicationContext] :Closing WebApplicationContext for namespace 'DispatcherServlet-servlet': startup date [Tue Mar 01 15:41:44 CST 2022]; parent: Root WebApplicationContext
+[INFO ][2022-03-01 15:59:28,120][org.springframework.web.context.support.XmlWebApplicationContext] :Closing Root WebApplicationContext: startup date [Tue Mar 01 15:41:41 CST 2022]; root of context hierarchy
+[INFO ][2022-03-01 15:59:28,146][org.apache.shiro.session.mgt.AbstractValidatingSessionManager] :Disabled session validation scheduler.
