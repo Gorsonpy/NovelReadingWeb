@@ -20,7 +20,6 @@ public class CheckCodeUtil {
     private static Random random = new Random();
 
 
-
     /**
      * 输出随机验证码图片流,并返回验证码值（一般传入输出流，响应response页面端，Web项目用的较多）
      *
@@ -83,7 +82,6 @@ public class CheckCodeUtil {
         outputImage(w, h, outputFile, verifyCode);
         return verifyCode;
     }
-
 
 
     /**

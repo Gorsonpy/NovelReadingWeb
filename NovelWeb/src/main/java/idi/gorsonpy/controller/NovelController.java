@@ -10,6 +10,8 @@ import idi.gorsonpy.utils.FileUtils;
 import idi.gorsonpy.utils.Page;
 import idi.gorsonpy.utils.Result;
 import idi.gorsonpy.utils.SearchInfo;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,25 +28,32 @@ public class NovelController {
     @Autowired
     NovelService novelService;
 
+
+    //注解表示需要管理员身份
+    @RequiresRoles(value = {"admin"})
     //添加小说类型
     @RequestMapping(value = "addNovelType", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<String> addNovelType(@RequestBody JSONObject typeInfo){
+    public Result<String> addNovelType(@RequestBody JSONObject typeInfo) {
         String typeName = typeInfo.getString("typeName");
         novelService.addNovelType(typeName);
         return Result.success();
     }
 
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     //显示已有的小说类型
     @RequestMapping(value = "showTypes")
-    public Result<List<Type>> showTypes(){
+    public Result<List<Type>> showTypes() {
         List<Type> types = novelService.showTypes();
         return Result.success(types);
     }
+
+
     //上传小说
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/uploadNovel")
     @ResponseBody
-    public Result<String> uploadNovel(@RequestParam String name, @RequestParam String author, @RequestParam String description, @RequestParam MultipartFile pictureFile, @RequestParam MultipartFile txtFile, @RequestParam String type,  HttpServletRequest request) {
+    public Result<String> uploadNovel(@RequestParam String name, @RequestParam String author, @RequestParam String description, @RequestParam MultipartFile pictureFile, @RequestParam MultipartFile txtFile, @RequestParam String type, HttpServletRequest request) {
         System.out.println(author);
         System.out.println(name);
         System.out.println(description);
@@ -53,6 +62,7 @@ public class NovelController {
         String txtFileName = txtFile.getOriginalFilename();
         System.out.println(pictureFileName);
         System.out.println(txtFileName);
+
 
         //检查文件是否为空
         if (pictureFileName == null || pictureFileName.isEmpty() || txtFileName == null
@@ -99,7 +109,7 @@ public class NovelController {
         }
 
         //调用业务层存储novel
-        novelService.saveNovel(name, author, description, path2 + "\\\\" + pictureFileName , path1 + "\\\\" + txtFileName, type);
+        novelService.saveNovel(name, author, description, path2 + "\\\\" + pictureFileName, path1 + "\\\\" + txtFileName, type);
         result = Result.success();
         result.setMessage("小说上传成功");
         return result;
@@ -107,6 +117,7 @@ public class NovelController {
 
 
     //分页展示小说除图片之外的信息
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/showNovels")
     @ResponseBody
     public Page<List<Novel>> showNovels(@RequestBody JSONObject pageInfo) {
@@ -120,6 +131,7 @@ public class NovelController {
     }
 
     //下载文件
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/download/File")
     @ResponseBody
     public Result<String> showPicture(@RequestBody JSONObject filePathInfo, HttpServletResponse response) throws IOException {
@@ -143,7 +155,7 @@ public class NovelController {
             outputStream.flush();
         }
 
-        if(choose == 1){
+        if (choose == 1) {
             novelService.addTimes(filePath);
         }
         outputStream.close();
@@ -152,6 +164,7 @@ public class NovelController {
     }
 
     //搜索小说(分页展示 + 模糊搜索 + 动态sql)
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/searchNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody
     public Page<List<Novel>> searchNovels(@RequestBody SearchInfo searchInfo) {
@@ -163,10 +176,13 @@ public class NovelController {
     }
 
     // 排行榜功能(显示最高下载量的五部小说)
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/showPopular", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody
     public Result<List<Novel>> showPopular() {
         List<Novel> novels = novelService.showPopular();
         return Result.success(novels);
     }
+
+
 }

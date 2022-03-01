@@ -47,6 +47,20 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
+    //请求成功（不返回数据）
+    public static <T> Result<T> success() {
+        return new Result<T>(CodeEnum.SUCCESS);
+    }
+
+    //请求成功（返回数据）
+    public static <T> Result<T> success(T data) {
+        return new Result<T>(CodeEnum.SUCCESS, data);
+    }
+
+    //参数格式不正确
+    public static <T> Result<T> badRequest() {
+        return new Result<T>(CodeEnum.BAD_REQUEST);
+    }
 
     public Integer getStatus() {
         return status;
@@ -72,24 +86,7 @@ public class Result<T> implements Serializable {
         this.data = data;
     }
 
-
-    //请求成功（不返回数据）
-    public static <T> Result<T> success() {
-        return new Result<T>(CodeEnum.SUCCESS);
-    }
-
-    //请求成功（返回数据）
-    public static <T> Result<T> success(T data) {
-        return new Result<T>(CodeEnum.SUCCESS, data);
-    }
-
-    //参数格式不正确
-    public static <T> Result<T> badRequest() {
-        return new Result<T>(CodeEnum.BAD_REQUEST);
-    }
-
     //  .......可根据自己的需要往下延伸
-
 
     @Override
     public String toString() {

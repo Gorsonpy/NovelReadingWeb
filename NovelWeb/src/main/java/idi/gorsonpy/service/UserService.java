@@ -23,4 +23,6 @@ public interface UserService {
     List<Novel> showNovels(Integer page, Integer pageSize);
 
     void checkNovels(Long novelId, String checkStatus);
+
+    User selectUserByUserName(String username);
 }

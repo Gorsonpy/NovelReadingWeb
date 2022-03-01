@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
+<beans xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/mvc
@@ -12,6 +12,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--组件扫描  主要扫描controller-->
     <context:component-scan base-package="idi.gorsonpy.controller"/>
+    <context:component-scan base-package="idi.gorsonpy.auth.realm"/>
     <!--配置mvc注解驱动-->
 
     <!-- annotation-driven 控制器映射器和控制器适配器 ，用来控制@Controller处理http请求的方式-->
@@ -26,7 +27,7 @@ http://www.springframework.org/schema/context/spring-context.xsd">
     <mvc:default-servlet-handler/>
 
 
-   <!--  谷歌验证码的设置 -->
+    <!--  谷歌验证码的设置 -->
     <bean id="captchaProducer" class="com.google.code.kaptcha.impl.DefaultKaptcha">
         <property name="config">
             <bean class="com.google.code.kaptcha.util.Config">
@@ -59,6 +60,24 @@ http://www.springframework.org/schema/context/spring-context.xsd">
         <!--上传文件的编码类型-->
 
         <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+
+    <!-- 未认证或未授权时跳转必须在springmvc里面配，spring-shiro里的shirofilter配不生效 -->
+    <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <property name="exceptionMappings">
+            <props>
+                <!--表示捕获的异常 -->
+                <prop key="org.apache.shiro.authz.UnauthorizedException">
+                    <!--捕获该异常时跳转的路径 -->
+                    /403.jsp
+                </prop>
+                <!--表示捕获的异常 -->
+                <prop key="org.apache.shiro.authz.UnauthenticatedException">
+                    <!--捕获该异常时跳转的路径 -->
+                    /403.jsp
+                </prop>
+            </props>
+        </property>
     </bean>
 
 

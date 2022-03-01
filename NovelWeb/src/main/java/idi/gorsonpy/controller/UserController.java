@@ -1,7 +1,6 @@
 package idi.gorsonpy.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Producer;
@@ -11,6 +10,15 @@ import idi.gorsonpy.domain.User;
 import idi.gorsonpy.service.UserService;
 import idi.gorsonpy.utils.Page;
 import idi.gorsonpy.utils.Result;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,25 +47,37 @@ public class UserController {
 
     @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
-    public Result<User> login(@RequestBody User u, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println(u.getUsername() + u.getPassword());
-        User user = userService.Login(u.getUsername(), u.getPassword());
-        Result<User> result;
-        if (user == null) {
-            result = Result.badRequest();
-            result.setMessage("用户名或密码错误");
-            String result1 = JSON.toJSONString(result);
-            System.out.println(result1);
-            // request.getRequestDispatcher("/login.html").forward(request, response);
-        } else {
-            result = Result.success(user);
-            result.setMessage("登录成功");
-            String basepath = request.getContextPath() + "/success.html";
-            // response.sendRedirect(request.getContextPath() + "/success.html");
-            response.setHeader("REDIRECT", "REDIRECT");
-            response.setHeader("CONTENTPATH", basepath);
+    public Result<User> login(@RequestBody JSONObject loginInfo, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String rememberStatus = loginInfo.getString("rememberStatus");
+        String username = loginInfo.getString("username");
+        String password = loginInfo.getString("password");
+        //获取shrio框架实体
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, password);
+        //设置记住我
+        if ("1".equals(rememberStatus)) {
+            usernamePasswordToken.setRememberMe(true);
         }
-        return result;
+        try {
+            //调用subject的login方法发送到安全管理器
+            subject.login(usernamePasswordToken);
+        } catch (UnknownAccountException | IncorrectCredentialsException e) {
+            e.printStackTrace();
+            return Result.badRequest();
+        }
+        return Result.success();
+    }
+
+
+    //退出登录
+    @RequestMapping(value = "/logout")
+    public String logOut(HttpSession session) {
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            subject.logout();
+        }
+        return "/login";
     }
 
 
@@ -120,7 +140,20 @@ public class UserController {
         } else {
             //常规的注册方法，都是普通账号
             String password = registerInfo.getString("password");
-            userService.register(username, password, false);
+
+            //为了避免明文密码，这里使用Md5加盐加密后在存储到数据库
+            Object salt = ByteSource.Util.bytes(username);
+            //把用户名作为盐
+            /*
+             * 1.加密方法
+             * 2.加密对象
+             * 3.盐
+             * 4.加密次数
+             */
+            SimpleHash simpleHash = new SimpleHash("MD5", password, salt, 1024);
+
+            //传的是加密后的密码而不是原始密码
+            userService.register(username, simpleHash.toString(), false);
             System.out.println("注册成功");
             result = Result.success();
             result.setMessage("注册成功");
@@ -129,6 +162,7 @@ public class UserController {
     }
 
     //用户显示某小说是否收藏状态
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/showCollectStatus", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Result<String> showCollectStatus(@RequestBody Favorites favorites) {
@@ -147,6 +181,7 @@ public class UserController {
     }
 
     // 用户添加小说到收藏夹
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/collectNovel", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Result<String> collectNovel(@RequestBody Favorites favorites) {
@@ -158,6 +193,7 @@ public class UserController {
     }
 
     //用户取消收藏
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/delCollect", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Result<String> delCollect(@RequestBody JSONObject delInfo) {
@@ -168,6 +204,7 @@ public class UserController {
     }
 
     //用户收藏夹里小说展示
+    @RequiresRoles(value = {"admin", "general"}, logical = Logical.OR)
     @RequestMapping(value = "/showCollectNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
     @ResponseBody
     public Result<List<Novel>> showCollectNovels(@RequestBody JSONObject userInfo) {
@@ -180,10 +217,12 @@ public class UserController {
             return Result.badRequest();
     }
 
+
+    @RequiresRoles(value = {"admin"})
     // 展示待审核的小说
-    @RequestMapping(value = "/showNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
+    @RequestMapping(value = "/showUnchecked", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody
-    public Page<List<Novel>> showUnchecked(@RequestBody JSONObject pageInfo){
+    public Page<List<Novel>> showUnchecked(@RequestBody JSONObject pageInfo) {
         Integer page = pageInfo.getInteger("page");
         Integer pageSize = pageInfo.getInteger("pageSize");
         List<Novel> novels = userService.showNovels(page, pageSize);
@@ -194,6 +233,7 @@ public class UserController {
     }
 
 
+    @RequiresRoles(value = {"admin"})
     // 审核小说
     @RequestMapping(value = "/checkNovels", method = {RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=utf-8")
     @ResponseBody

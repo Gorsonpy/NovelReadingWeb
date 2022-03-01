@@ -5,23 +5,22 @@ import org.junit.Test;
 public class FileNameTest {
     public static void main(String[] args) {
         String filename = "check.txt";
-        if(FileUtils.checkTxtFileName(filename, FileUtils.novelSuffixList)){
+        if (FileUtils.checkTxtFileName(filename, FileUtils.novelSuffixList)) {
             System.out.println("正确");
-        }else{
+        } else {
             System.out.println("错误");
         }
     }
 
     //测试生成唯一ID
     @Test
-    public void testGenerateId()
-    {
+    public void testGenerateId() {
         System.out.println(FileUtils.generateUid("xiaobai.txt"));
         System.out.println(FileUtils.generateUid("ll.jpg"));
     }
 
     @Test
-    public void test(){
+    public void test() {
         System.out.println("\\\\");
     }
 }

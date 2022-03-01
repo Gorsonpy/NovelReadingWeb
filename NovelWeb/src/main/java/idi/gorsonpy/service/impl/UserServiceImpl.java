@@ -71,4 +71,9 @@ public class UserServiceImpl implements UserService {
             novelMapper.delNovel(novelId);
         }
     }
+
+    @Override
+    public User selectUserByUserName(String username) {
+        return userMapper.selectUserByUsername(username);
+    }
 }

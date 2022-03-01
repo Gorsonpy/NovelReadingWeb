@@ -24,6 +24,9 @@
             <if test="type != null and type != '' ">
                 and type = #{type}
             </if>
+            <if test="1=1">
+                and is_checked = true
+            </if>
         </where>
     </select>
 </mapper>

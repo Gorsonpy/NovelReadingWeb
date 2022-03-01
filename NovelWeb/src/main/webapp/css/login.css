@@ -55,12 +55,15 @@ input {
     color: #f0edf3;
     padding-left: 10px;
 }
-#username{
+
+#username {
     width: 200px;
 }
-#password{
+
+#password {
     width: 202px;
 }
+
 .button {
     border-color: cornsilk;
     background-color: rgba(100, 149, 237, .7);
@@ -76,6 +79,8 @@ input {
     text-align: center;
     margin-top: 30px;
 }
-#loginMsg{
-    text-align: center;color: aliceblue;
+
+#loginMsg {
+    text-align: center;
+    color: aliceblue;
 }

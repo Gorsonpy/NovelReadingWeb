@@ -1,0 +1,2 @@
+[INFO ][2022-02-28 22:32:51,804][org.springframework.web.context.support.XmlWebApplicationContext] :Closing WebApplicationContext for namespace 'DispatcherServlet-servlet': startup date [Sun Feb 27 23:07:32 CST 2022]; parent: Root WebApplicationContext
+[INFO ][2022-02-28 22:32:51,874][org.springframework.web.context.support.XmlWebApplicationContext] :Closing Root WebApplicationContext: startup date [Sun Feb 27 23:07:30 CST 2022]; root of context hierarchy

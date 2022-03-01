@@ -64,6 +64,20 @@ public class Page<T> implements Serializable {
         this.data = data;
     }
 
+    //请求成功（不返回数据）
+    public static <T> Page<T> success() {
+        return new idi.gorsonpy.utils.Page<T>(CodeEnum.SUCCESS);
+    }
+
+    //请求成功（返回数据）
+    public static <T> Page<T> success(T data) {
+        return new idi.gorsonpy.utils.Page<T>(CodeEnum.SUCCESS, data);
+    }
+
+    //参数格式不正确
+    public static <T> Page<T> badRequest() {
+        return new idi.gorsonpy.utils.Page<T>(CodeEnum.BAD_REQUEST);
+    }
 
     public Integer getStatus() {
         return status;
@@ -90,7 +104,7 @@ public class Page<T> implements Serializable {
     }
 
     //设置页数信息
-    public void setPageInfo(PageInfo pageInfo){
+    public void setPageInfo(PageInfo pageInfo) {
         this.pageNum = pageInfo.getPageNum();
         this.pageSize = pageInfo.getPageSize();
         this.pageTotal = pageInfo.getTotal();
@@ -99,21 +113,6 @@ public class Page<T> implements Serializable {
         this.nextPage = pageInfo.getNextPage();
         this.isFirstPage = pageInfo.isIsFirstPage();
         this.isLastPage = pageInfo.isIsLastPage();
-    }
-
-    //请求成功（不返回数据）
-    public static <T> Page<T> success() {
-        return new idi.gorsonpy.utils.Page<T>(CodeEnum.SUCCESS);
-    }
-
-    //请求成功（返回数据）
-    public static <T> Page<T> success(T data) {
-        return new idi.gorsonpy.utils.Page<T>(CodeEnum.SUCCESS, data);
-    }
-
-    //参数格式不正确
-    public static <T> Page<T> badRequest() {
-        return new idi.gorsonpy.utils.Page<T>(CodeEnum.BAD_REQUEST);
     }
 
     //  .......可根据自己的需要往下延伸
